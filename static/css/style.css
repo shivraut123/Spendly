@@ -478,6 +478,205 @@ a { color: inherit; text-decoration: none; }
 .auth-switch a:hover { text-decoration: underline; }
 
 /* ------------------------------------------------------------------ */
+/* Landing — hero                                                      */
+/* ------------------------------------------------------------------ */
+
+.hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 4rem 2rem 3rem;
+    max-width: 700px;
+    gap: 2.5rem;
+}
+
+.hero-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hero-badge {
+    background: #e6f5f1;
+    color: #2a8a78;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    margin-bottom: 1.75rem;
+    text-transform: none;
+}
+
+.hero-title {
+    font-size: clamp(2.4rem, 6vw, 3.75rem);
+    line-height: 1.1;
+    margin-bottom: 1.25rem;
+}
+
+.hero-title-accent {
+    color: #2a8a78;
+    font-style: normal;
+}
+
+.hero-subtitle {
+    font-size: 1rem;
+    max-width: 480px;
+    margin-bottom: 2rem;
+}
+
+.hero-actions {
+    gap: 0.875rem;
+}
+
+.hero-actions .btn-primary,
+.hero-actions .btn-ghost {
+    border-radius: 999px;
+    padding: 0.75rem 1.75rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+}
+
+.hero-actions .btn-primary:hover,
+.hero-actions .btn-ghost:hover {
+    background: #2a2a2a;
+    color: var(--paper);
+    border-color: transparent;
+}
+
+.hero-visual {
+    width: 100%;
+    justify-content: center;
+}
+
+.mock-card {
+    max-width: 100%;
+    padding: 1.5rem;
+}
+
+.mock-traffic-lights {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+}
+
+.tl {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.tl-red    { background: #ff5f57; }
+.tl-yellow { background: #ffbd2e; }
+.tl-green  { background: #28c840; }
+
+.mock-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.mock-stat {
+    background: var(--paper);
+    border-radius: var(--radius-sm);
+    padding: 0.875rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    text-align: left;
+}
+
+.mock-stat-label {
+    font-size: 0.75rem;
+    color: var(--ink-muted);
+    font-weight: 400;
+}
+
+.mock-stat-value {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--ink);
+    line-height: 1.2;
+}
+
+.mock-stat-sub {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.mock-sub-danger  { color: var(--danger); }
+.mock-sub-success { color: #2a8a78; }
+.mock-sub-muted   { color: var(--ink-muted); font-weight: 400; }
+
+.mock-bar-row { grid-template-columns: 60px 1fr; }
+
+.mock-bar-food   { background: #e9a83a; }
+.mock-bar-travel { background: #5b8fd4; }
+.mock-bar-bills  { background: #9b72c8; }
+
+/* ------------------------------------------------------------------ */
+/* Video modal                                                         */
+/* ------------------------------------------------------------------ */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1.5rem;
+}
+
+.modal-overlay[aria-hidden="true"] { display: none; }
+
+.modal-box {
+    position: relative;
+    background: var(--ink);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 800px;
+    overflow: hidden;
+}
+
+.modal-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.875rem;
+    background: none;
+    border: none;
+    color: var(--paper);
+    font-size: 1.75rem;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 10;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+}
+
+.modal-close:hover { opacity: 1; }
+
+.modal-video-wrap {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+}
+
+.modal-video-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* ------------------------------------------------------------------ */
 /* Static pages (Terms, Privacy, etc.)                                */
 /* ------------------------------------------------------------------ */
 
@@ -579,4 +778,5 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 600px) {
     .nav-links a:not(.nav-cta) { display: none; }
     .hero { padding: 3rem 1rem 2rem; }
+    .mock-stats { grid-template-columns: 1fr; }
 }
