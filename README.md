@@ -44,9 +44,9 @@ expense-tracker/
 | Route | Method | Description | Status |
 |---|---|---|---|
 | `/` | GET | Landing page | Done |
-| `/register` | GET, POST | User registration | UI done, backend pending |
-| `/login` | GET, POST | User login | UI done, backend pending |
-| `/logout` | GET | User logout | Pending |
+| `/register` | GET, POST | User registration | Done |
+| `/login` | GET, POST | User login | Done |
+| `/logout` | GET | User logout | Done |
 | `/profile` | GET | User profile | Pending |
 | `/expenses/add` | GET, POST | Add new expense | Pending |
 | `/expenses/<id>/edit` | GET, POST | Edit expense | Pending |
@@ -57,17 +57,16 @@ expense-tracker/
 ## Features
 
 - **Landing page** — Hero section, mock app preview, feature highlights, YouTube video modal
-- **Authentication** — Register and login forms (backend implementation pending)
+- **Authentication** — Register, login with session management, and logout
 - **Expense CRUD** — Add, edit, delete expenses (pending)
 - **Categories** — Food, Travel, Bills, and more with color-coded visualization
 - **Legal pages** — Terms of Service and Privacy Policy
 
-## Database Schema (planned)
+## Database Schema
 
 ```sql
-users (id, name, email, password, created_at)
+users (id, name, email, password_hash, created_at)
 expenses (id, user_id, amount, category, description, date, created_at)
-categories (id, name, user_id)
 ```
 
 ## Design System
@@ -119,16 +118,15 @@ pytest
 
 ## Development Status
 
-The frontend and project scaffolding are complete. The following backend features are yet to be implemented:
-
-- [ ] Database initialization (`database/db.py`)
-- [ ] User registration (POST `/register`)
-- [ ] User login with session management (POST `/login`)
-- [ ] Logout (GET `/logout`)
-- [ ] User profile page
-- [ ] Add expense
-- [ ] Edit expense
-- [ ] Delete expense
+| Step | Feature | Status |
+|---|---|---|
+| 01 | Database setup — SQLite schema, seed data | Done |
+| 02 | User registration | Done |
+| 03 | Login and logout with session management | Done |
+| 04 | User profile page | Pending |
+| 05 | Add expense | Pending |
+| 06 | Edit expense | Pending |
+| 07 | Delete expense | Pending |
 
 ## License
 
