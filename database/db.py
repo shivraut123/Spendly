@@ -77,6 +77,16 @@ def seed_db():
     conn.close()
 
 
+def get_user_by_email(email):
+    """Return the users row for email, or None if not found."""
+    conn = get_db()
+    user = conn.execute(
+        "SELECT * FROM users WHERE email = ?", (email,)
+    ).fetchone()
+    conn.close()
+    return user
+
+
 def create_user(name, email, password):
     """Hash the password and insert a new user into the database."""
     hash_pw = generate_password_hash(password)
