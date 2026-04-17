@@ -1,79 +1,50 @@
-import sqlite3
-from flask import Flask, render_template, request, redirect, url_for, flash, session
-from werkzeug.security import check_password_hash
-from database.db import get_db, init_db, seed_db, create_user, get_user_by_email
+import sqlite3 # You'll need this for catching duplicate emails later
+from flask import Flask, render_template, request, flash, redirect, url_for
+from database.db import get_db, init_db, seed_db, create_user # Assuming create_user is added
 
 app = Flask(__name__)
-app.secret_key = "spendly-dev-secret"
+app.secret_key = "super-secret-development-key" # Required for flash() to work
 
 with app.app_context():
     init_db()
     seed_db()
 
-
 # ------------------------------------------------------------------ #
 # Routes                                                              #
 # ------------------------------------------------------------------ #
 
-@app.route("/")
-def landing():
-    return render_template("landing.html")
-
-
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    if session.get("user_id"):
-        return redirect(url_for("landing"))
     if request.method == "POST":
-        name             = request.form.get("name", "").strip()
-        email            = request.form.get("email", "").strip()
-        password         = request.form.get("password", "")
+        # 1. Grab the data from the submitted form
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip()
+        password = request.form.get("password", "")
         confirm_password = request.form.get("confirm_password", "")
 
+        # 2. Basic Validation: Check for empty fields
         if not name or not email or not password or not confirm_password:
             flash("All fields are required.")
-            return render_template("register.html")
+            return render_template("register.html", name=name, email=email)
 
+        # 3. ---> YOUR SNIPPET GOES HERE <---
         if password != confirm_password:
             flash("Passwords do not match.")
-            return render_template("register.html")
+            return render_template("register.html", name=name, email=email)
 
+        # 4. Database Insertion (From Claude's plan)
         try:
             create_user(name, email, password)
         except sqlite3.IntegrityError:
             flash("An account with that email is already registered.")
-            return render_template("register.html")
+            return render_template("register.html", name=name, email=email)
 
+        # 5. Success! Redirect to login.
         flash("Account created! Please sign in.")
         return redirect(url_for("login"))
 
+    # If it's a GET request (just visiting the page), render the empty form
     return render_template("register.html")
-
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if session.get("user_id"):
-        return redirect(url_for("landing"))
-    if request.method == "POST":
-        email    = request.form.get("email", "").strip()
-        password = request.form.get("password", "")
-
-        if not email or not password:
-            flash("Email and password are required.")
-            return render_template("login.html")
-
-        user = get_user_by_email(email)
-        if user is None or not check_password_hash(user["password_hash"], password):
-            flash("Invalid email or password.")
-            return render_template("login.html")
-
-        session.clear()
-        session["user_id"]   = user["id"]
-        session["user_name"] = user["name"]
-        return redirect(url_for("landing"))
-
-    return render_template("login.html")
-
 
 # ------------------------------------------------------------------ #
 # Placeholder routes — students will implement these                  #
@@ -91,9 +62,7 @@ def privacy():
 
 @app.route("/logout")
 def logout():
-    session.clear()
-    flash("You've been signed out.")
-    return redirect(url_for("landing"))
+    return "Logout — coming in Step 3"
 
 
 @app.route("/profile")
