@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Profile — Spendly{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for msg in messages %}
+        <div class="auth-error">{{ msg }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {# 1. Profile header #}
+  <div class="profile-header">
+    <div class="profile-avatar">{{ user.initials }}</div>
+    <div class="profile-info">
+      <h1 class="profile-name">{{ user.name }}</h1>
+      <p class="profile-meta">
+        <i data-lucide="mail"></i>
+        {{ user.email }}
+        <span class="meta-sep">·</span>
+        <i data-lucide="calendar"></i>
+        Member since {{ user.member_since }}
+      </p>
+    </div>
+  </div>
+
+  {# 2. Summary stats #}
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--green">
+        <i data-lucide="wallet"></i>
+      </div>
+      <p class="stat-label">Total Spent</p>
+      <p class="stat-value">{{ stats.total }}</p>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--amber">
+        <i data-lucide="receipt"></i>
+      </div>
+      <p class="stat-label">Expenses</p>
+      <p class="stat-value">{{ stats.count }}</p>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--purple">
+        <i data-lucide="tag"></i>
+      </div>
+      <p class="stat-label">Top Category</p>
+      <p class="stat-value stat-value--sm">{{ stats.top_category }}</p>
+    </div>
+  </div>
+
+  {# 3 + 4. Two-column grid #}
+  <div class="profile-grid">
+
+    {# 3. Recent transactions #}
+    <div class="profile-card">
+      <div class="card-header">
+        <h2 class="card-title">
+          <i data-lucide="clock"></i>
+          Recent Transactions
+        </h2>
+        <a href="{{ url_for('add_expense') }}" class="btn-primary btn-sm">
+          <i data-lucide="plus"></i> Add
+        </a>
+      </div>
+      <table class="txn-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th class="align-right">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tx in transactions %}
+          <tr>
+            <td class="txn-date">{{ tx.date }}</td>
+            <td class="txn-desc">{{ tx.description }}</td>
+            <td><span class="badge badge-{{ tx.category | lower }}">{{ tx.category }}</span></td>
+            <td class="txn-amount align-right">{{ tx.amount }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {# 4. Category breakdown #}
+    <div class="profile-card">
+      <div class="card-header">
+        <h2 class="card-title">
+          <i data-lucide="pie-chart"></i>
+          By Category
+        </h2>
+      </div>
+      <div class="cat-list">
+        {% for cat in categories %}
+        <div class="cat-row">
+          <div class="cat-meta">
+            <span class="cat-name">{{ cat.name }}</span>
+            <span class="cat-amount">{{ cat.amount }}</span>
+          </div>
+          <div class="cat-track">
+            <div class="cat-bar cat-bar--{{ cat.name | lower }}" style="width: {{ cat.pct }}%"></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>lucide.createIcons();</script>
+{% endblock %}
