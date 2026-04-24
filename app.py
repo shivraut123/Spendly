@@ -1,6 +1,7 @@
 import sqlite3 # You'll need this for catching duplicate emails later
 from flask import Flask, render_template, request, flash, redirect, url_for, session
-from database.db import get_db, init_db, seed_db, create_user # Assuming create_user is added
+from database.db import get_db, init_db, seed_db, create_user, get_user_by_id, get_expenses_by_user, get_category_totals
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = "super-secret-development-key" # Required for flash() to work
@@ -99,35 +100,47 @@ def profile():
     if not session.get("user_id"):
         return redirect(url_for("login"))
 
+    user_row = get_user_by_id(session["user_id"])
+    created_at = datetime.strptime(user_row["created_at"], "%Y-%m-%d %H:%M:%S")
     user = {
-        "name": "Demo User",
-        "initials": "D",
-        "email": "demo@spendly.com",
-        "member_since": "April 2026",
+        "name": user_row["name"],
+        "initials": user_row["name"][0].upper(),
+        "email": user_row["email"],
+        "member_since": created_at.strftime("%B %Y"),
     }
 
-    stats = {
-        "total": "₹5,520.00",
-        "count": 8,
-        "top_category": "Shopping",
-    }
+    expenses = get_expenses_by_user(session["user_id"])
+    cat_totals = get_category_totals(session["user_id"])
+
+    if expenses:
+        grand_total = sum(row["amount"] for row in expenses)
+        top_category = cat_totals[0]["category"] if cat_totals else "—"
+        stats = {
+            "total": f"₹{grand_total:,.2f}",
+            "count": len(expenses),
+            "top_category": top_category,
+        }
+    else:
+        stats = {"total": "₹0.00", "count": 0, "top_category": "—"}
 
     transactions = [
-        {"date": "Apr 10", "description": "Restaurant lunch",  "category": "Food",          "amount": "₹220.00"},
-        {"date": "Apr 10", "description": "Miscellaneous",     "category": "Other",         "amount": "₹80.00"},
-        {"date": "Apr 09", "description": "Clothes",           "category": "Shopping",      "amount": "₹2,500.00"},
-        {"date": "Apr 07", "description": "Movie tickets",     "category": "Entertainment", "amount": "₹600.00"},
-        {"date": "Apr 05", "description": "Pharmacy",          "category": "Health",        "amount": "₹350.00"},
+        {
+            "date": datetime.strptime(row["date"], "%Y-%m-%d").strftime("%b %d"),
+            "description": row["description"],
+            "category": row["category"],
+            "amount": f"₹{row['amount']:,.2f}",
+        }
+        for row in expenses[:5]
     ]
 
+    grand_total_for_pct = sum(row["amount"] for row in expenses) if expenses else 0
     categories = [
-        {"name": "Shopping",      "amount": "₹2,500.00", "pct": 45},
-        {"name": "Bills",         "amount": "₹1,200.00", "pct": 22},
-        {"name": "Food",          "amount": "₹670.00",   "pct": 12},
-        {"name": "Entertainment", "amount": "₹600.00",   "pct": 11},
-        {"name": "Health",        "amount": "₹350.00",   "pct": 6},
-        {"name": "Transport",     "amount": "₹120.00",   "pct": 2},
-        {"name": "Other",         "amount": "₹80.00",    "pct": 1},
+        {
+            "name": row["category"],
+            "amount": f"₹{row['total']:,.2f}",
+            "pct": round(row["total"] / grand_total_for_pct * 100) if grand_total_for_pct else 0,
+        }
+        for row in cat_totals
     ]
 
     return render_template(

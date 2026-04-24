@@ -77,6 +77,22 @@ def seed_db():
     conn.close()
 
 
+def get_category_totals(user_id):
+    conn = get_db()
+    rows = conn.execute(
+        """
+        SELECT category, SUM(amount) AS total
+        FROM expenses
+        WHERE user_id = ?
+        GROUP BY category
+        ORDER BY total DESC
+        """,
+        (user_id,),
+    ).fetchall()
+    conn.close()
+    return rows
+
+
 def get_user_by_email(email):
     """Return the users row for email, or None if not found."""
     conn = get_db()
@@ -87,10 +103,19 @@ def get_user_by_email(email):
     return user
 
 
+def get_user_by_id(user_id):
+    conn = get_db()
+    user = conn.execute(
+        "SELECT * FROM users WHERE id = ?", (user_id,)
+    ).fetchone()
+    conn.close()
+    return user
+
+
 def create_user(name, email, password):
     """Hash the password and insert a new user into the database."""
     hash_pw = generate_password_hash(password)
-    
+
     conn = get_db()
     cursor = conn.execute(
         "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
@@ -99,5 +124,15 @@ def create_user(name, email, password):
     conn.commit()
     user_id = cursor.lastrowid
     conn.close()
-    
+
     return user_id
+
+
+def get_expenses_by_user(user_id):
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT * FROM expenses WHERE user_id = ? ORDER BY date DESC, created_at DESC",
+        (user_id,),
+    ).fetchall()
+    conn.close()
+    return rows
